@@ -2,14 +2,19 @@ package jpabook.jpashop.repository.order.query;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
+
 @Repository
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class OrderQueryRepository {
 
     private final EntityManager em;
@@ -73,8 +78,8 @@ public class OrderQueryRepository {
         return orderIds;
     }
 
-    public List<OrderFlatDto> findAllByDto_flat() {
-            return em.createQuery(
+    public List<OrderQueryDto> findAllByDto_flat() {
+        List<OrderFlatDto> flats = em.createQuery(
                     "select new "+
                             "jpabook.jpashop.repository.order.query.OrderFlatDto(o.id, m.name, o.orderDate, o.status, d.address, i.name, oi.orderPrice, oi.count) "+
                             "from Order  o "+
@@ -83,6 +88,13 @@ public class OrderQueryRepository {
                             "join o.orderItems oi "+
                             "join oi.item i", OrderFlatDto.class
             ).getResultList();
+        return flats.stream().collect(groupingBy(o -> new OrderQueryDto(o.getOrderId(), o.getName(), o.getOrderDate(), o.getOrderStatus(), o.getAddress()),
+                mapping(o -> new OrderItemQueryDto(o.getOrderId(), o.getItemName(), o.getOrderPrice(), o.getCount()), toList())
+        )).entrySet().stream()
+                .map(e -> new OrderQueryDto(e.getKey().getOrderId(),
+                        e.getKey().getName(), e.getKey().getOrderDate(), e.getKey().getOrderStatus(),
+                        e.getKey().getAddress(), e.getValue()))
+                .collect(toList());
 
     }
 }
