@@ -2,9 +2,8 @@ package jpabook.jpashop.service.query;
 
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderItem;
-import jpabook.jpashop.repository.OrderRepository;
+import jpabook.jpashop.repository.OrderRepositoryOld;
 import jpabook.jpashop.repository.OrderSearch;
-import jpabook.jpashop.repository.order.query.OrderQueryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +17,7 @@ import static java.util.stream.Collectors.toList;
 @Transactional(readOnly = true)
 public class OrderQueryService {
 
-    private final OrderRepository orderRepository;
+    private final OrderRepositoryOld orderRepository;
 
     public List<Order> orderV1(){
         List<Order> all = orderRepository.findAllByString(new OrderSearch());
