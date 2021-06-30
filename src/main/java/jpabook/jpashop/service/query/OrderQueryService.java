@@ -20,7 +20,7 @@ public class OrderQueryService {
     private final OrderRepositoryOld orderRepository;
 
     public List<Order> orderV1(){
-        List<Order> all = orderRepository.findAllByString(new OrderSearch());
+        List<Order> all = orderRepository.findAll(new OrderSearch());
         for (Order order: all) {
             order.getMember().getName();
             order.getDelivery().getAddress();
@@ -30,7 +30,7 @@ public class OrderQueryService {
         return all;
     }
     public List<OrderDto> orderV2(){
-        List<Order> orders = orderRepository.findAllByString(new OrderSearch());
+        List<Order> orders = orderRepository.findAll(new OrderSearch());
         return orders.stream().map(OrderDto::new).collect(toList());
 
     }
