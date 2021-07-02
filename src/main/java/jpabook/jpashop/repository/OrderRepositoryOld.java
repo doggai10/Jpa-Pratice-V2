@@ -20,7 +20,11 @@ public class OrderRepositoryOld {
     private final EntityManager em;
 
     public void save(Order order){
-        em.persist(order);
+        if(order.getId() == null){
+            em.persist(order);
+        }else{
+            em.merge(order);
+        }
     }
 
     public Order findOne(Long id){
